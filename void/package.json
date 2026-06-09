@@ -1,10 +1,12 @@
 {
   "name": "void",
   "version": "1.0.0",
-  "description": "An Electron application with React and TypeScript",
+  "description": "Void Music Player",
   "main": "./out/main/index.js",
   "author": "example.com",
-  "homepage": "https://electron-vite.org",
+  "build": {
+    "extends": null
+  },
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",
@@ -26,6 +28,7 @@
     "audiomotion-analyzer": "^4.5.4",
     "crypto-js": "^4.2.0",
     "electron-updater": "^6.3.9",
+    "react-icons": "^5.6.0",
     "zustand": "^5.0.14"
   },
   "devDependencies": {
@@ -43,6 +46,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
+    "nsis": "^0.0.0",
     "prettier": "^3.7.4",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",

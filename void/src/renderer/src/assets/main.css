@@ -2,9 +2,14 @@
 
 :root {
   --gap: 3px;
-  --theme-color: rgb(234, 9, 9);
+  --theme-color: rgb(9, 230, 234);
   --dark-from-theme: color-mix(in srgb, var(--theme-color) 20%, transparent);
   --light-from-theme: color-mix(in srgb, var(--theme-color) 80%, transparent);
+}
+#app{
+  width: 100vw;
+  height: 100vh;
+   transition: scale 1s ease-out;
 }
 .pfixed {
   top: 0;
@@ -74,7 +79,7 @@
   background: black;
   border: 1px solid var(--bar-color);
   border-top: 1px solid var(--bar-border-color);
-  transition: height 0.55s ease-out;
+  transition: height 0.15s ease-out;
 }
 /* falling-shapes.css */
 
@@ -128,6 +133,29 @@
   border-color: var(--theme-color);
 }
 
+.main {
+  width: 100%;
+  height: 100%;
+}
+.title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: color-mix(in srgb, var(--theme-color) 20%, transparent);
+  width: 100%;
+  /* text-shadow: 0 0 8px var(--theme-color); */
+
+}
+.main h1 {
+  font-size: 3.5rem;
+  margin: 0;
+  font-weight: bolder;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
 @keyframes fall {
   0% {
     transform: translateY(0px) rotate(0deg);
@@ -169,4 +197,185 @@
 }
 .shape.diamond:nth-child(even) {
   rotate: 30deg;
+}
+
+
+.song{
+  display: grid;
+  /* grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); */
+  grid-template-columns: 1fr;
+  gap: 12px;
+  place-items: center;
+  height: 100%;
+  width: 100%;
+}
+.song-info{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+.open-btn{
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+}
+.song-name{
+  font-weight: bold;
+  font-size: 19px;
+  font-family: cursive;
+  color: color-mix(in srgb, var(--theme-color) 80%, transparent);
+}
+.song-circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  color: var(--theme-color);
+  display: grid;
+  place-items: center;
+  background: black;
+  border: 2px solid var(--theme-color);
+  transition: scale 1s ease-out;
+  /* animation removed — controlled by JS */
+}
+.volume-bar {
+  width: 80%;
+  height: 3px;
+  background: var(--dark-from-theme);
+  border-radius: 2px;
+  position: relative;
+  cursor: pointer;
+  margin-top: 4px;
+}
+.vc::before{
+  content: "volume";
+  font-size: 0.75rem;
+  width: fit-content;
+  color: var(--light-from-theme);
+}
+.vc{
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  place-items: center;
+}
+*{
+  user-select: none;
+}
+
+.volume-fill {
+  height: 100%;
+  background: var(--light-from-theme);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.volume-thumb {
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--light-from-theme);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  max-width: 500px;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.seek-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--dark-from-theme);
+  border-radius: 2px;
+  position: relative;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+.seek-fill {
+  height: 100%;
+  background: var(--theme-color);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.seek-thumb {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--theme-color);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.seek-thumb:not(.dragging) {
+  transition: left 0.1s linear;
+  
+}
+.seek-time {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--light-from-theme);
+}
+
+.control-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.ctrl-btn {
+  background: transparent;
+  border: none;
+  color: var(--light-from-theme);
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 8px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  transition: color 0.2s, background 0.2s;
+}
+
+.ctrl-btn:hover {
+  color: var(--theme-color);
+  background: var(--dark-from-theme);
+}
+
+.ctrl-btn.active {
+  color: var(--theme-color);
+}
+
+.play-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--theme-color);
+  color: black;
+  font-size: 1.4rem;
+  border: none;
+}
+
+.play-btn:hover {
+  background: var(--light-from-theme);
+  color: black;
 }

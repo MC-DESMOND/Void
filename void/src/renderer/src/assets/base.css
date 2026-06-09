@@ -40,14 +40,29 @@
   font-weight: normal;
 }
 
+#root{
+   display: grid;
+  place-items: center;
+  overflow: hidden;
+  min-height: 100vh;
+  width: 100vw;
+}
 
 body {
   margin: 0;
   padding: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
   min-height: 100vh;
   width: 100vw;
   color: var(--color-text);
   /* background: var(--color-background); */
+  background-image: url("./void.webp");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  backdrop-filter: brightness(0.8);
   background: black;
   line-height: 1.6;
   font-family:

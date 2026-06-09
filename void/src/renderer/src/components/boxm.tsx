@@ -1,4 +1,39 @@
-import { enddata, endlnr } from "./addons/HOC";
+import {  endlnr } from "./addons/HOC";
+import {  getCenter } from "./addons/anys";
+
+export function initCirclePulse() {
+  const circle = document.getElementById("song-circle") as HTMLElement;
+  if (!circle) return;
+
+  const anim = circle.animate(
+    [{ transform: "rotate(0deg)" }, { transform: "rotate(360deg)" }],
+    { duration: 20000, iterations: Infinity, easing: "linear" }
+  );
+
+  endlnr.on("analyser.beat", ({ strength }) => {
+    // scale pulse
+    circle.style.scale = `${1 + (strength / 255) * 0.5}`;
+    setTimeout(() => { circle.style.scale = "1"; }, 100);
+
+    // rotation speedup
+    const boost = 1 + (strength / 255) * 255;
+    anim.playbackRate = boost;
+
+    setTimeout(() => {
+      const steps = 20;
+      const stepTime = 600 / steps;
+      let step = 0;
+      const ease = setInterval(() => {
+        step++;
+        anim.playbackRate = boost + (1 - boost) * (step / steps);
+        if (step >= steps) {
+          anim.playbackRate = 1;
+          clearInterval(ease);
+        }
+      }, stepTime);
+    }, 100);
+  });
+}
 
 export default function boxesManipulator() {
   interface Ripple {
@@ -8,15 +43,19 @@ export default function boxesManipulator() {
   }
 
   const ripples: Ripple[] = [];
-
-  // spawn a ripple on each bass hit
 endlnr.on("analyser.beat", ({ strength }) => {
   ripples.push({
     radius: 10,
     opacity: (strength / 255) * 0.8,
     speed: 3 + (strength / 255) * 6,
   });
+  const circle = document.getElementById("app") as HTMLElement;
+  if (!circle) return;
+   circle.style.scale = `${1 + (strength / 255) * 0.1}`;
+    setTimeout(() => { circle.style.scale = "1"; }, 100);
 });
+
+
 function animate() {
   const boxes = document.querySelector(".boxes-glow") as HTMLElement;
   if (!boxes) { requestAnimationFrame(animate); return; }
@@ -47,7 +86,10 @@ function animate() {
         const width = 30;
         const inner = Math.max(0, r.radius - width);
         const outer = r.radius + width;
-        return `radial-gradient(circle at 50% 100%, transparent ${inner}px, ${withOpacity(r.opacity)} ${r.radius}px, transparent ${outer}px)`;
+        const center = getCenter(".song-circle");
+        const percentX = (center.x / window.innerWidth) * 100;
+        const percentY = (center.y / window.innerHeight) * 100;
+        return `radial-gradient(circle at ${percentX}% ${percentY}%, transparent ${inner}px, ${withOpacity(r.opacity)} ${r.radius}px, transparent ${outer}px)`;
     })
     .join(", ");
   }

@@ -1,5 +1,18 @@
 import { contextBridge } from 'electron'
-import { electronAPI } from '@electron-toolkit/preload'
+import { electronAPI, } from '@electron-toolkit/preload'
+// preload/index.ts
+import { ipcRenderer } from "electron";
+
+
+contextBridge.exposeInMainWorld("electronAPI", {
+  readFile:    (path: string) => ipcRenderer.invoke("file.read", path),
+  openDialog:  ()             => ipcRenderer.invoke("dialog.open"),
+  openFolder:  ()             => ipcRenderer.invoke("dialog.open-folder"),
+  onOpenFile:  (cb: (path: string) => void) =>
+    ipcRenderer.on("open-file", (_, path) => cb(path)),
+  onOpenFiles: (cb: (data: { files: string[], startIndex: number }) => void) =>
+    ipcRenderer.on("open-files", (_, data) => cb(data)),
+});
 
 // Custom APIs for renderer
 const api = {}
