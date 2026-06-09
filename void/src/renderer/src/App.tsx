@@ -122,7 +122,7 @@ audioElement?.addEventListener("ended", () => {
           <FaRegFolderOpen />
         </Button>
         <Div className="title">
-          <h1>VOID</h1>
+          <h1>█▓▒­░⡷⠂VФID⠐⢾░▒▓█</h1>
         </Div>
         <Sub></Sub>
       </Main>

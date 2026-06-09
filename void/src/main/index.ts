@@ -1,7 +1,7 @@
 import { app, shell, BrowserWindow, ipcMain, protocol, net } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
+import icon from '../../resources/void.png?asset'
 import fs from 'fs'
 import path from 'path'
 import { dialog } from 'electron'
@@ -83,7 +83,9 @@ function createWindow(): void {
     width: 900,
     height: 670,
     show: false,
+    title:"VOID 🎧",
     autoHideMenuBar: true,
+    icon:icon,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
