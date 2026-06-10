@@ -1,5 +1,15 @@
-import {  endlnr } from "./addons/HOC";
-import {  getCenter } from "./addons/anys";
+// boxm.ts
+import { endlnr } from "./addons/HOC";
+import { getCenter } from "./addons/anys";
+
+// ── tune these ───────────────────────────────────────────────
+const BEAT_SENSITIVITY = 1.2;  // how much above average to trigger
+const RIPPLE_FADE      = 0.004; // fade speed per frame
+const RIPPLE_MAX_OP    = 0.6;  // max ripple opacity
+const RIPPLE_CAP       = 5;    // max simultaneous ripples
+const SCALE_BOOST      = 0.05; // app scale pulse amount
+const ROTATION_BOOST   = 6;    // max rotation speed multiplier
+// ────────────────────────────────────────────────────────────
 
 export function initCirclePulse() {
   const circle = document.getElementById("song-circle") as HTMLElement;
@@ -11,12 +21,14 @@ export function initCirclePulse() {
   );
 
   endlnr.on("analyser.beat", ({ strength }) => {
+    const intensity = strength / 255;
+
     // scale pulse
-    circle.style.scale = `${1 + (strength / 255) * 0.5}`;
-    setTimeout(() => { circle.style.scale = "1"; }, 100);
+    circle.style.scale = `${1 + intensity * 0.3}`;
+    setTimeout(() => { circle.style.scale = "1"; }, 150);
 
     // rotation speedup
-    const boost = 1 + (strength / 255) * 255;
+    const boost = 1 + intensity * ROTATION_BOOST;
     anim.playbackRate = boost;
 
     setTimeout(() => {
@@ -31,11 +43,14 @@ export function initCirclePulse() {
           clearInterval(ease);
         }
       }, stepTime);
-    }, 100);
+    }, 150);
   });
 }
 
 export default function boxesManipulator() {
+  // wire sensitivity to BarAnalyser
+  endlnr.emit("analyser.sensitivity", { value: BEAT_SENSITIVITY });
+
   interface Ripple {
     radius: number;
     opacity: number;
@@ -43,58 +58,70 @@ export default function boxesManipulator() {
   }
 
   const ripples: Ripple[] = [];
-endlnr.on("analyser.beat", ({ strength }) => {
-  ripples.push({
-    radius: 10,
-    opacity: (strength / 255) * 0.8,
-    speed: 3 + (strength / 255) * 6,
+
+  endlnr.on("analyser.beat", ({ strength }) => {
+    const intensity = strength / 255;
+
+    // cap simultaneous ripples
+    if (ripples.length < RIPPLE_CAP) {
+      ripples.push({
+        radius:  10,
+        opacity: intensity * RIPPLE_MAX_OP,
+        speed:   3 + intensity * 6,
+      });
+    }
+
+    // subtle app scale pulse
+    const app = document.getElementById("app") as HTMLElement;
+    if (app) {
+      app.style.scale = `${1 + intensity * SCALE_BOOST}`;
+      setTimeout(() => { app.style.scale = "1"; }, 100);
+    }
   });
-  const circle = document.getElementById("app") as HTMLElement;
-  if (!circle) return;
-   circle.style.scale = `${1 + (strength / 255) * 0.1}`;
-    setTimeout(() => { circle.style.scale = "1"; }, 100);
-});
 
+  function animate() {
+    const boxes = document.querySelector(".boxes-glow") as HTMLElement;
+    if (!boxes) { requestAnimationFrame(animate); return; }
 
-function animate() {
-  const boxes = document.querySelector(".boxes-glow") as HTMLElement;
-  if (!boxes) { requestAnimationFrame(animate); return; }
+    const color = getComputedStyle(boxes)
+      .getPropertyValue("--ripple-color")
+      .trim() || "rgb(255, 255, 255)";
 
-  // read color from CSS variable
-  const color = getComputedStyle(boxes)
-  .getPropertyValue("--ripple-color")
-  .trim() || "rgb(255, 255, 255)";
-
-// use color-mix to control opacity via a second argument
     const withOpacity = (opacity: number) =>
-  `color-mix(in srgb, ${color} ${(opacity * 100).toFixed(1)}%, transparent)`;
+      `color-mix(in srgb, ${color} ${(opacity * 100).toFixed(1)}%, transparent)`;
 
-  for (const r of ripples) {
-    r.radius  += r.speed;
-    r.opacity -= 0.002;
+    // advance ripples
+    for (const r of ripples) {
+      r.radius  += r.speed;
+      r.opacity -= RIPPLE_FADE;
+    }
+
+    // remove dead ripples
+    const maxRadius = Math.hypot(window.innerWidth, window.innerHeight);
+    const alive = ripples.filter(r => r.opacity > 0 && r.radius < maxRadius);
+    ripples.length = 0;
+    ripples.push(...alive);
+
+    if (ripples.length === 0) {
+      boxes.style.background = "transparent";
+    } else {
+      // calculate center once per frame
+      const center   = getCenter(".song-circle");
+      const percentX = (center.x / window.innerWidth)  * 100;
+      const percentY = (center.y / window.innerHeight) * 100;
+
+      boxes.style.background = ripples
+        .map(r => {
+          const width = 30;
+          const inner = Math.max(0, r.radius - width);
+          const outer = r.radius + width;
+          return `radial-gradient(circle at ${percentX}% ${percentY}%, transparent ${inner}px, ${withOpacity(r.opacity)} ${r.radius}px, transparent ${outer}px)`;
+        })
+        .join(", ");
+    }
+
+    requestAnimationFrame(animate);
   }
 
-    const alive = ripples.filter(r => r.opacity > 0 && r.radius < window.innerWidth);
-  ripples.length = 0;
-  ripples.push(...alive);
-
-  if (ripples.length === 0) {
-    boxes.style.background = "transparent";
-  } else {
-    boxes.style.background = ripples
-    .map(r => {
-        const width = 30;
-        const inner = Math.max(0, r.radius - width);
-        const outer = r.radius + width;
-        const center = getCenter(".song-circle");
-        const percentX = (center.x / window.innerWidth) * 100;
-        const percentY = (center.y / window.innerHeight) * 100;
-        return `radial-gradient(circle at ${percentX}% ${percentY}%, transparent ${inner}px, ${withOpacity(r.opacity)} ${r.radius}px, transparent ${outer}px)`;
-    })
-    .join(", ");
-  }
-
-  requestAnimationFrame(animate);
-}
   animate();
 }

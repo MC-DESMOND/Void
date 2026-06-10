@@ -33,7 +33,7 @@
 }
 
 .boxes-glow {
-  --ripple-color:color-mix(in srgb, var(--theme-color) 50%, transparent);
+  --ripple-color:color-mix(in srgb, var(--theme-color) 70%, transparent);
   position: absolute;
   inset: 0;
   pointer-events: none; 
