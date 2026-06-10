@@ -42,7 +42,29 @@ function getAudioFiles(inputPath: string): { files: string[]; startIndex: number
   return { files: [], startIndex: 0 }
 }
 
-// ── protocol ─────────────────────────────────────────────────
+// ── single instance lock (must be before whenReady) ──────────
+const gotLock = app.requestSingleInstanceLock()
+if (!gotLock) {
+  app.quit()
+}
+
+app.on('second-instance', (_, argv) => {
+  const inputPath = argv[argv.length - 1]
+  if (!inputPath) return
+
+  const result = getAudioFiles(inputPath)
+  if (result.files.length === 0) return
+
+  const windows = BrowserWindow.getAllWindows()
+  if (windows.length > 0) {
+    const win = windows[0]
+    if (win.isMinimized()) win.restore()
+    win.focus()
+    win.webContents.send('open-files', result)
+  }
+})
+
+// ── protocol (must be before whenReady) ──────────────────────
 protocol.registerSchemesAsPrivileged([
   {
     scheme: 'void',
@@ -83,17 +105,15 @@ function createWindow(): void {
     width: 900,
     height: 670,
     show: false,
-    title:"VOID 🎧",
+    title: 'VOID 🎧',
     autoHideMenuBar: true,
     icon,
-    ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
     },
   })
 
-  // handle void:// protocol
   protocol.handle('void', (request) => {
     const filePath = request.url.slice('void://'.length)
     const decoded = decodeURIComponent(filePath).replace(/^\//, '')
@@ -115,7 +135,6 @@ function createWindow(): void {
     })
   })
 
-  // send opened file/folder to renderer once loaded
   mainWindow.webContents.once('did-finish-load', () => {
     const args = process.argv
     const inputPath = app.isPackaged ? args[1] : args[2]
@@ -143,7 +162,7 @@ function createWindow(): void {
 
 // ── app lifecycle ─────────────────────────────────────────────
 app.whenReady().then(() => {
-  electronApp.setAppUserModelId('com.electron')
+  electronApp.setAppUserModelId('com.void.app')
 
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
