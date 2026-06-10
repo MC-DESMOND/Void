@@ -30,7 +30,7 @@ asarUnpack:
   - resources/**
 
 win:
-  icon: resources/void.ico
+  icon: resources/logo.ico
   target:
     - target: nsis
       arch:
@@ -56,15 +56,16 @@ nsis:
   createDesktopShortcut: always
   createStartMenuShortcut: true
   shortcutName: ${productName}
-  installerIcon: resources/void.ico
-  uninstallerIcon: resources/void.ico
+  installerIcon: resources/logo.ico
+  uninstallerIcon: resources/logo.ico
+  installerHeaderIcon: resources/logo.ico
   displayLanguageSelector: false
   runAfterFinish: true
   include: build/installer.nsh
   uninstallDisplayName: ${productName}
 
 linux:
-  icon: resources
+  icon: resources/void.png
   target:
     - target: AppImage
       arch:
@@ -82,11 +83,15 @@ linux:
         - m4a
       name: Audio File
       mimeType: audio/mpeg
+
 appImage:
   artifactName: ${name}-${version}.${ext}
+
 npmRebuild: false
+
 publish:
   provider: generic
   url: https://example.com/auto-updates
+
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/
