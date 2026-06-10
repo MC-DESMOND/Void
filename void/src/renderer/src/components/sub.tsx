@@ -19,6 +19,39 @@ import { FaFolderOpen } from "react-icons/fa";
 import { Div } from "./addons/ctsx";
 import { TbRepeatOnce, TbRepeat } from "react-icons/tb";
 import BaseHOC, { endlnr } from "./addons/HOC";
+
+import { HiColorSwatch } from "react-icons/hi";
+
+function ColorPickerButton() {
+  function openPicker() {
+    const input = document.createElement("input");
+    input.type = "color";
+    input.value = "#ea0909"; // default theme color
+    input.style.display = "none";
+    document.body.appendChild(input);
+
+    input.addEventListener("input", (e) => {
+      const color = (e.target as HTMLInputElement).value;
+      document.documentElement.style.setProperty("--theme-color", color);
+    });
+
+    input.addEventListener("change", (e) => {
+      const color = (e.target as HTMLInputElement).value;
+      document.documentElement.style.setProperty("--theme-color", color);
+      localStorage.setItem("void-theme-color", color);
+      document.body.removeChild(input);
+    });
+
+    input.click();
+  }
+
+  return (
+    <button className="ctrl-btn" onClick={openPicker} title="Theme color">
+      <HiColorSwatch />
+    </button>
+  );
+}
+
 type ControlsContextType = {
   playing: boolean;
   muted: boolean;
@@ -465,6 +498,7 @@ function Controls() {
         <PlayPauseButton />
         <ForwardButton />
         <MuteButton />
+        <ColorPickerButton /> 
       </Div>
     </Div>
   );

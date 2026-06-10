@@ -58,6 +58,7 @@ nsis:
   shortcutName: ${productName}
   installerIcon: resources/logo.ico
   uninstallerIcon: resources/logo.ico
+  installerHeader: resources/logo.ico
   installerHeaderIcon: resources/logo.ico
   displayLanguageSelector: false
   runAfterFinish: true

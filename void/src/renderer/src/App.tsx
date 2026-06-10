@@ -32,6 +32,8 @@ async function openDialog() {
 
 function App(): React.JSX.Element {
   const initialized = useRef(false);
+  
+
   const queue = useRef<string[]>([]);
   const queueIndex = useRef(0);
 
@@ -44,6 +46,12 @@ function App(): React.JSX.Element {
   useEffect(() => {
     if (initialized.current) return; // block double-init in StrictMode
     initialized.current = true;
+    // restore saved theme color
+  const savedColor = localStorage.getItem("void-theme-color");
+  if (savedColor) {
+    document.documentElement.style.setProperty("--theme-color", savedColor);
+  }
+
     // initCirclePulse();
     // boxesManipulator();
     endlnr.on("dialog.open", async ({}) => {
