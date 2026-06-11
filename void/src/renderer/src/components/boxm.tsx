@@ -3,10 +3,10 @@ import { endlnr } from "./addons/HOC";
 import { getCenter } from "./addons/anys";
 
 // ── tune these ───────────────────────────────────────────────
-const BEAT_SENSITIVITY = 1.2;  // how much above average to trigger
-const RIPPLE_FADE      = 0.004; // fade speed per frame
+const BEAT_SENSITIVITY = 1.15;  // how much above average to trigger
+const RIPPLE_FADE      = 0.003; // fade speed per frame
 const RIPPLE_MAX_OP    = 0.6;  // max ripple opacity
-const RIPPLE_CAP       = 5;    // max simultaneous ripples
+// const RIPPLE_CAP       = 18;    // max simultaneous ripples
 const SCALE_BOOST      = 0.05; // app scale pulse amount
 const ROTATION_BOOST   = 6;    // max rotation speed multiplier
 // ────────────────────────────────────────────────────────────
@@ -63,13 +63,13 @@ export default function boxesManipulator() {
     const intensity = strength / 255;
 
     // cap simultaneous ripples
-    if (ripples.length < RIPPLE_CAP) {
+    // if (ripples.length < RIPPLE_CAP) {
       ripples.push({
         radius:  10,
         opacity: intensity * RIPPLE_MAX_OP,
         speed:   3 + intensity * 6,
       });
-    }
+    // }
 
     // subtle app scale pulse
     const app = document.getElementById("app") as HTMLElement;
