@@ -16,8 +16,8 @@ export class BarAnalyser {
   private slowBassAvg  = 1;
   private beatCooldown = 0;
   private beatSensitivity = 1.1;
-
-  constructor(audioCtx: AudioContext, source: AudioNode) {
+  private name = ""
+  constructor(audioCtx: AudioContext, source: AudioNode,name="analyser") {
     this.motion = new AudioMotionAnalyzer(undefined, {
       audioCtx,
       source,
@@ -28,14 +28,14 @@ export class BarAnalyser {
       start:           true,
       onCanvasDraw:    () => this.tick(),
     });
-
+    this.name = name
     // allow external sensitivity control
-    endlnr.on("analyser.sensitivity", ({ value }) => {
+    endlnr.on(`${this.name}.sensitivity`, ({ value }) => {
       this.beatSensitivity = value;
     });
   }
 
-  private tick(name = "analyser") {
+  private tick() {
     const m = this.motion;
 
     const bassRaw    = m.getEnergy('bass');
@@ -79,29 +79,29 @@ export class BarAnalyser {
 
     if (isBeat) {
       this.beatCooldown = 6;
-      endlnr.emit(`${name}.beat`, {
+      endlnr.emit(`${this.name}.beat`, {
         strength: Math.min(255, Math.max(0, normalizedBass)),
         delta,
       });
     }
 
     // raw
-    endlnr.emit(`${name}.bars`,    { bars: bars255 });
-    endlnr.emit(`${name}.average`, { average });
-    endlnr.emit(`${name}.highest`, { highest });
-    endlnr.emit(`${name}.bass`,    { bass });
+    endlnr.emit(`${this.name}.bars`,    { bars: bars255 });
+    endlnr.emit(`${this.name}.average`, { average });
+    endlnr.emit(`${this.name}.highest`, { highest });
+    endlnr.emit(`${this.name}.bass`,    { bass });
 
     // normalized
-    endlnr.emit(`${name}.bars.norm`,    { bars: normalizedBars });
-    endlnr.emit(`${name}.average.norm`, { average: normalizedAverage });
-    endlnr.emit(`${name}.highest.norm`, { highest: normalizedHighest });
-    endlnr.emit(`${name}.bass.norm`,    { bass: normalizedBass });
+    endlnr.emit(`${this.name}.bars.norm`,    { bars: normalizedBars });
+    endlnr.emit(`${this.name}.average.norm`, { average: normalizedAverage });
+    endlnr.emit(`${this.name}.highest.norm`, { highest: normalizedHighest });
+    endlnr.emit(`${this.name}.bass.norm`,    { bass: normalizedBass });
 
     // extras
-    endlnr.emit(`${name}.mid`,    { mid:    Math.round(midRaw    * 255) });
-    endlnr.emit(`${name}.treble`, { treble: Math.round(trebleRaw * 255) });
-    endlnr.emit(`${name}.peak`,   { peak:   Math.round(peakRaw   * 255) });
-    endlnr.emit(`${name}.overall`,{ overall:Math.round(overallRaw* 255) });
+    endlnr.emit(`${this.name}.mid`,    { mid:    Math.round(midRaw    * 255) });
+    endlnr.emit(`${this.name}.treble`, { treble: Math.round(trebleRaw * 255) });
+    endlnr.emit(`${this.name}.peak`,   { peak:   Math.round(peakRaw   * 255) });
+    endlnr.emit(`${this.name}.overall`,{ overall:Math.round(overallRaw* 255) });
   }
 
   stop()  { this.motion.stop();  }

@@ -8,6 +8,7 @@ const RIPPLE_FADE      = 0.003; // fade speed per frame
 const RIPPLE_MAX_OP    = 0.6;  // max ripple opacity
 // const RIPPLE_CAP       = 18;    // max simultaneous ripples
 const SCALE_BOOST      = 0.05; // app scale pulse amount
+const CIRCLE_SCALE_BOOST      = 0.1; // app scale pulse amount
 const ROTATION_BOOST   = 6;    // max rotation speed multiplier
 // ────────────────────────────────────────────────────────────
 
@@ -78,6 +79,13 @@ export default function boxesManipulator() {
       setTimeout(() => { app.style.scale = "1"; }, 100);
     }
   });
+  
+  endlnr.on("analyser.average.norm",({average})=>{
+    let ave = average/255
+    let circle:any = document.querySelector(".song-circle")
+    circle.style.scale = `${1 + ave * CIRCLE_SCALE_BOOST}`
+    setTimeout(() => { circle.style.scale = "1"; }, 100);
+  })
 
   function animate() {
     const boxes = document.querySelector(".boxes-glow") as HTMLElement;
