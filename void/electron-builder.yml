@@ -30,7 +30,7 @@ asarUnpack:
   - resources/**
 
 win:
-  icon: resources/logo.ico
+  icon: resources/void.ico
   target:
     - target: nsis
       arch:
@@ -56,10 +56,10 @@ nsis:
   createDesktopShortcut: always
   createStartMenuShortcut: true
   shortcutName: ${productName}
-  installerIcon: resources/logo.ico
-  uninstallerIcon: resources/logo.ico
-  installerHeader: resources/logo.ico
-  installerHeaderIcon: resources/logo.ico
+  installerIcon: resources/void.ico
+  uninstallerIcon: resources/void.ico
+  installerHeader: resources/void.ico
+  installerHeaderIcon: resources/void.ico
   displayLanguageSelector: false
   runAfterFinish: true
   include: build/installer.nsh
